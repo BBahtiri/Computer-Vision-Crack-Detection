@@ -1,0 +1,12 @@
+# Essential libraries based on your scripts
+tensorflow>=2.8 # Or your specific version of TensorFlow/Keras
+keras-tuner>=1.1 # Or your specific version
+segmentation-models>=1.0 # Or your specific version
+albumentations>=1.0 # Or your specific version
+opencv-python>=4.5
+matplotlib>=3.4
+numpy>=1.20
+scikit-learn>=1.0 # For split_data.py
+PyYAML>=5.4 # For threshold_images.py (if using YAML config)
+
+# Add any other specific libraries you used

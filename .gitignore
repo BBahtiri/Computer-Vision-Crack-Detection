@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+venv/
+env/
+ENV/
+*.env
+.env
+
+# Data - Uncomment if your data directories are large and shouldn't be in the repo
+# data_dir/
+# data_dir_PHI/
+# Raw photos/
+
+# Trained Models - Uncomment if large; consider Git LFS or external hosting
+# *.h5
+# *.weights
+# best_model*.h5
+# best_unet_hyper_tuned*.h5
+
+# IDE specific
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Logs and script outputs
+*.log
+# *.csv # Keep training_log*.csv if you want to version them
+predictions_output/
+hyperband_tuning_output*/
+# *.png # Keep plot images if you want to version them
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
