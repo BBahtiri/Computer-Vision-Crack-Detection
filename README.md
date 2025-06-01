@@ -13,6 +13,11 @@ This repository implements semantic segmentation models to detect crack patterns
 - **Phase Field (PHI)**: Background, cracks, and holes
 - **Electrical Potential (V)**: Left side, right side, and holes
 
+### Example Prediction
+Below is an example illustrating the model's input, the ground truth segmentation, and the model's predicted segmentation mask:
+
+![Example Prediction](Example.png)
+
 ## 🔬 Computer Vision Approach
 
 ### Architecture
