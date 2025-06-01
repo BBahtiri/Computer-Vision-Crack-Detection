@@ -36,6 +36,67 @@ This repository implements semantic segmentation models to detect crack patterns
   - Class 1: Minor defects/features
   - Class 2: Major cracks/boundaries
 
+# 🔬 Computer Vision Problem Statement
+
+### The Challenge
+Traditional crack detection methods rely on edge detection algorithms (Canny, Sobel) or threshold-based approaches, which fail to:
+- Distinguish between different severity levels of defects
+- Handle varying lighting conditions and surface textures  
+- Provide pixel-accurate segmentation masks
+- Generalize across different materials and imaging conditions
+
+### Our Solution
+We employ **semantic segmentation** - a computer vision technique that classifies each pixel in an image into predefined categories. Unlike object detection (bounding boxes) or image classification (whole image labels), semantic segmentation provides:
+
+- **Pixel-level precision**: Every pixel gets a class label
+- **Multi-class support**: Distinguish between defect severities
+- **Spatial understanding**: Preserve exact shape and location of defects
+- **End-to-end learning**: No manual feature engineering required
+
+## 🏗️ Architecture Deep Dive
+
+### U-Net: The Backbone of Our Segmentation
+
+U-Net is a fully convolutional network (FCN) specifically designed for biomedical image segmentation but has proven highly effective for industrial defect detection.
+
+```
+                    Input (512×512×3)
+                           │
+    ┌──────────────────────┴──────────────────────┐
+    │                  ENCODER                     │
+    │  ┌─────────────────────────────────────┐   │
+    │  │ Conv Block 1: 512×512×64           │   │ ──┐ Skip Connection
+    │  │ MaxPool 2×2 ↓                      │   │   │
+    │  │ Conv Block 2: 256×256×128         │   │ ──┤
+    │  │ MaxPool 2×2 ↓                      │   │   │
+    │  │ Conv Block 3: 128×128×256         │   │ ──┤
+    │  │ MaxPool 2×2 ↓                      │   │   │
+    │  │ Conv Block 4: 64×64×512           │   │ ──┤
+    │  │ MaxPool 2×2 ↓                      │   │   │
+    │  └─────────────────────────────────────┘   │   │
+    │                                             │   │
+    │              Bottleneck                    │   │
+    │               32×32×1024                   │   │
+    │                                             │   │
+    │                  DECODER                     │   │
+    │  ┌─────────────────────────────────────┐   │   │
+    │  │ UpConv 2×2 + Skip ← 64×64×512     │←──┼───┘
+    │  │ Conv Block                          │   │
+    │  │ UpConv 2×2 + Skip ← 128×128×256   │←──┤
+    │  │ Conv Block                          │   │
+    │  │ UpConv 2×2 + Skip ← 256×256×128   │←──┤
+    │  │ Conv Block                          │   │
+    │  │ UpConv 2×2 + Skip ← 512×512×64    │←──┘
+    │  │ Conv Block                          │   │
+    │  └─────────────────────────────────────┘   │
+    └──────────────────────┴──────────────────────┘
+                           │
+                    Output Conv 1×1
+                           │
+                 Segmentation Map (512×512×3)
+```
+
+
 ## 🚀 Quick Start
 
 ### Installation
@@ -96,18 +157,6 @@ Edit `config.yaml` to modify:
 - **F1-Score**: Harmonic mean of precision and recall
 - **Confusion Matrix**: Per-class classification accuracy
 
-## 🎓 Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@mastersthesis{mavani2024crack,
-  title={Detection of Crack Propagation in a Plate Using an Electromechanical Phase-Field Model and Machine Learning},
-  author={Mavani, Jaykumar},
-  year={2024},
-  school={Leibniz Universität Hannover}
-}
-```
 
 ## 📄 License
 
