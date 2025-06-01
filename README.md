@@ -102,59 +102,113 @@ U-Net is a fully convolutional network (FCN) specifically designed for biomedica
 ```
 
 
-## 🚀 Quick Start
+## 🚀 How to Run the Codes
 
-### Installation
-```bash
-git clone https://github.com/yourusername/crack-detection-unet.git
-cd crack-detection-unet
-pip install -r requirements.txt
-```
+Follow these steps to set up your environment and execute the scripts:
 
-### Training
-```bash
-# Hyperparameter tuning (recommended)
-python hyper.py
+---
+### 1. Prerequisites
+* **Python**: Ensure you have Python 3.8 or newer installed.
+* **Git**: Required for cloning the repository.
+* **(Optional) ABAQUS**: Needed only if you intend to regenerate the primary dataset from FEM simulations as described in the thesis.
 
-# Custom U-Net with dropout
-python phi.py
-```
+---
+### 2. Installation
+1.  **Clone the Repository**:
+    Open your terminal or command prompt and run:
+    ```bash
+    git clone [https://github.com/BBahtiri/Computer-Vision-Crack-Detection.git](https://github.com/BBahtiri/Computer-Vision-Crack-Detection.git)
+    cd Computer-Vision-Crack-Detection
+    ```
 
-### Inference
-```bash
-python prediction_new_model.py
-```
+2.  **Create and Activate a Virtual Environment** (Recommended):
+    ```bash
+    python -m venv venv
+    ```
+    Activate the environment:
+    * On Windows:
+        ```bash
+        venv\Scripts\activate
+        ```
+    * On macOS/Linux:
+        ```bash
+        source venv/bin/activate
+        ```
 
-## 📈 Results
+3.  **Install Dependencies**:
+    Install all required Python libraries using the `requirements.txt` file:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-| Model | Backbone | IoU (PHI) | IoU (V) | F1-Score | Training Time |
-|-------|----------|-----------|---------|----------|---------------|
-| U-Net | ResNet34 | 0.82 | 0.96 | 0.89 | 2 hours |
-| U-Net | ResNet50 | 0.74 | 0.91 | 0.83 | 3 hours |
-| U-Net | ResNet152 | 0.80 | 0.94 | 0.88 | 5 hours |
+---
+### 3. Data Preparation
+1.  **Dataset Source**: The primary dataset for this project was generated from 10,000 Finite Element Method (FEM) simulations using ABAQUS, as detailed in the accompanying Master Thesis. If you are not regenerating this dataset, you will need to have your set of images (e.g., `*_frame_0.png`) and their corresponding label masks (e.g., `*_frame_last.png`).
 
-**Key Finding**: Electrical potential visualization provides clearer crack path detection compared to phase-field methods.
+2.  **Organize Your Data**:
+    Before splitting, place your raw images and labels into separate directories. For example:
+    ```
+    data_root/
+    ├── all_images/
+    │   ├── sim0001_frame_0.png
+    │   └── ...
+    └── all_labels/
+        ├── sim0001_frame_last.png
+        └── ...
+    ```
 
-## 🛠️ Project Structure
+3.  **Split into Train/Validation/Test Sets**:
+    Use the `src/split_data.py` script to organize your dataset into the required structure for training and evaluation.
+    ```bash
+    python src/split_data.py path/to/your/all_images path/to/your/all_labels --output-dir ./name_of_processed_data_directory
+    ```
+    Replace `path/to/your/all_images` and `path/to/your/all_labels` with the actual paths to your data. This command will create subdirectories like `train_images/`, `train_labels/`, `val_images/`, `val_labels/`, `test_images/`, and `test_labels/` inside the specified `--output-dir` (e.g., `./data_dir_PHI` or `./data_dir_V`).
 
-```
-├── hyper.py                 # Hyperparameter tuning with Keras Tuner
-├── phi.py                   # Custom U-Net implementation with dropout
-├── prediction_new_model.py  # Inference script
-├── split_data.py           # Dataset splitting utility
-├── threshold_images.py     # Label generation from grayscale images
-├── config.yaml             # Configuration file
-├── requirements.txt        # Dependencies
-└── README.md              # This file
-```
+4.  **Configure Script Paths**:
+    Before running any training or inference script, you **must** update the `DATA_DIR` variable (and potentially other path-related variables) within the `Config` class at the beginning of that specific Python script (e.g., in `src/hyper.py`, `src/phi.py`, `src/prediction_new_model.py`). This path should point to your processed data directory created in the previous step.
 
-## 🔧 Configuration
+    For example, in `src/phi.py`, you might change:
+    ```python
+    class Config:
+        DATA_DIR = "./name_of_processed_data_directory" # Or, e.g., "data_dir_PHI"
+        # ... other configurations
+    ```
 
-Edit `config.yaml` to modify:
-- Model architecture parameters
-- Training hyperparameters
-- Data paths and preprocessing settings
-- Loss functions (Dice, Focal, or combined)
+---
+### 4. Running the Python Scripts
+
+Ensure your virtual environment is activated and you are in the root directory of the project (`Computer-Vision-Crack-Detection`) in your terminal.
+
+1.  **Hyperparameter Tuning** (Recommended to find optimal model parameters):
+    * Verify/update the `Config` class in `src/hyper.py` (especially `DATA_DIR`).
+    * Run the script:
+        ```bash
+        python src/hyper.py
+        ```
+    * This will initiate the Keras Tuner search. The best model found will be saved (e.g., `best_unet_hyper_tuned_corrected.h5`), and logs will be stored in a directory like `hyperband_tuning_output_corrected/`.
+
+2.  **Training a Specific Model Configuration**:
+    * To train a model using, for example, the custom U-Net defined in `src/phi.py`:
+        * Verify/update the `Config` class in `src/phi.py`.
+        * Run the script:
+            ```bash
+            python src/phi.py
+            ```
+    * Similarly, you can run `src/seg_model_train.py` after configuring its `Config` class.
+    * These scripts will save the trained model (e.g., `best_model_phi_corrected.h5`) and create training logs.
+
+3.  **Inference (Running Predictions on New Data)**:
+    * Modify the `Config` class in `src/prediction_new_model.py`:
+        * Set `MODEL_PATH` to the path of your trained `.h5` model file.
+        * Ensure `BACKBONE` matches the architecture of the loaded model.
+        * Set `TEST_IMAGES_DIR` and `TEST_LABELS_DIR` to your test dataset paths.
+    * Execute the script:
+        ```bash
+        python src/prediction_new_model.py
+        ```
+    * This will load the specified model, perform predictions on images from your test set, and visualize the results. Predictions might be saved in an `predictions_output/` directory if configured.
+
+---
 
 ## 📊 Evaluation Metrics
 
