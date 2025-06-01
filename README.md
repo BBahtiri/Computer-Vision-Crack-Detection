@@ -217,10 +217,6 @@ Ensure your virtual environment is activated and you are in the root directory o
 - **Confusion Matrix**: Per-class classification accuracy
 
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 This work is done in collaboration with Jaykumar Mavani
